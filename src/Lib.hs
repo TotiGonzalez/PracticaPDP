@@ -67,7 +67,10 @@ hacerMedicamento [] = id
 hacerMedicamento (x:xs) = x . hacerMedicamento xs
 
 reduceFatFast :: Int -> Medicamento
-reduceFatFast cantPotencia = hacerMedicamento [replicate cantPotencia alcachofa, hierbaVerde "Obesidad"]
+reduceFatFast  = hacerMedicamento . hacerListaDeHierba
+
+hacerListaDeHierba :: Int -> [Hierba]
+hacerListaDeHierba cantPotencia = replicate cantPotencia alcachofa ++ [hierbaVerde "Obesidad"]
 
 pdepCilina :: Medicamento
 pdepCilina = hacerMedicamento (map hierbaVerde sufijosInfecciosas)  
@@ -77,5 +80,21 @@ sufijosInfecciosas = [ "sis", "itis", "emia", "cocos"]
 
 --------------PUNTO 4-------------------------
 
-cantidadIdeal :: Num a => (a -> Bool) -> a
-cantidadIdeal condicion = filter (condicion [1..])
+cantidadIdeal :: (Enum a , Num a) => (a -> Bool) -> a
+cantidadIdeal condicion = head (filter condicion [1..])
+
+lograEstabilizar :: Medicamento -> [Valen] -> Bool
+lograEstabilizar unMedicamento unosRatones = ningunoConSobrepeso (aplicarMedicamento unMedicamento unosRatones) 
+                                           && menosDeTresEnfermedades (aplicarMedicamento unMedicamento unosRatones)
+
+aplicarMedicamento :: Medicamento -> [Valen] -> [Valen]
+aplicarMedicamento = map
+
+ningunoConSobrepeso :: [Valen] -> Bool
+ningunoConSobrepeso = all ((<1).peso)
+
+menosDeTresEnfermedades :: [Valen] -> Bool
+menosDeTresEnfermedades = all ((<3).length.enfermedades) 
+
+experimentoFinal :: [Valen] -> Int
+experimentoFinal unosRatones = cantidadIdeal (\n -> lograEstabilizar (reduceFatFast n) unosRatones)
