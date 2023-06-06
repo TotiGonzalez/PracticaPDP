@@ -55,13 +55,16 @@ eliminarEnfermedades :: Int -> Valen -> Valen
 eliminarEnfermedades cantLetrasMax unRaton = unRaton { enfermedades = filter ((<=cantLetrasMax) . length) (enfermedades unRaton) }
 
 --------------PUNTO 3-------------------------
+
 type Medicamento = Valen -> Valen
 
 pondsAntiAge :: Medicamento
 pondsAntiAge = hacerMedicamento [ hierbaBuena , hierbaBuena , hierbaBuena , alcachofa]
 
 hacerMedicamento :: [Hierba] -> Medicamento
-hacerMedicamento 
+hacerMedicamento unasHierbas = foldl1 (.) unasHierbas
+hacerMedicamento [] = id
+hacerMedicamento (x:xs) = x . hacerMedicamento xs
 
 reduceFatFast :: Int -> Medicamento
 reduceFatFast cantPotencia = hacerMedicamento [replicate cantPotencia alcachofa, hierbaVerde "Obesidad"]
@@ -71,3 +74,8 @@ pdepCilina = hacerMedicamento (map hierbaVerde sufijosInfecciosas)
 
 sufijosInfecciosas :: [String]
 sufijosInfecciosas = [ "sis", "itis", "emia", "cocos"]
+
+--------------PUNTO 4-------------------------
+
+cantidadIdeal :: Num a => (a -> Bool) -> a
+cantidadIdeal condicion = filter (condicion [1..])
